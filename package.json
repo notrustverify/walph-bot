@@ -1,0 +1,25 @@
+{
+  "name": "walph-bot",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "tsc --build .",
+    "start": "tsc --build . && pm2 start dist/src/bot.js"
+  },
+  "dependencies": {
+    "@alephium/cli": "^0.22.0",
+    "@alephium/get-extension-wallet": "^0.22.0",
+    "@alephium/web3": "^0.22.0",
+    "@alephium/web3-react": "^0.22.0",
+    "@alephium/web3-test": "^0.22.0",
+    "@alephium/web3-wallet": "^0.22.0",
+    "node-telegram-bot-api": "^0.63.0",
+    "pm2": "^5.3.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.3",
+    "@types/node-telegram-bot-api": "^0.61.8"
+  }
+}
