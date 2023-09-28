@@ -120,12 +120,16 @@ async function blitz(group, contractName) {
                 await (0, web3_1.sleep)(10 * 1000);
             }
             initialState = await WalphState.fetchState();
-            const winner = initialState.fields.lastWinner.toString().slice(0, 6) + "..." + initialState.fields.lastWinner.toString().slice(-6);
+            const winner = initialState.fields.lastWinner.toString().slice(0, 6) +
+                "..." +
+                initialState.fields.lastWinner.toString().slice(-6);
             const message = "🎲 Blitz Walph on group " +
-                group + "drawn" +
-                +"\n\n🎉 Winner: " + winner +
+                group +
+                "drawn" +
+                +"\n\n🎉 Winner: " +
+                winner +
                 "\n\n🍀 Try your chance <a href='https://walph.io/blitz'>here</a>";
-            // sendMessage(message);
+            sendMessage(message);
         }
     }
     const drawTimestamp = Number(initialState.fields.drawTimestamp);
@@ -134,18 +138,19 @@ async function blitz(group, contractName) {
     if (timeLeft > 0) {
         //3 hours
         if (timeLeft >= threeHours) {
-            console.log("3 hours - Notification at " + new Date(timeLeft - threeHours + Date.now()));
+            console.log("3 hours - Notification at " +
+                new Date(timeLeft - threeHours + Date.now()));
             setTimeout(blitzChecker, timeLeft - threeHours);
         }
         // ten minutes
         if (timeLeft >= tenMinutes) {
-            console.log("10 minutes - Notification at " + new Date(timeLeft - tenMinutes + Date.now()));
+            console.log("10 minutes - Notification at " +
+                new Date(timeLeft - tenMinutes + Date.now()));
             setTimeout(blitzChecker, timeLeft - tenMinutes);
         }
         console.log("winner - Notification at " + new Date(timeLeft + Date.now()));
         setTimeout(getWinner, 1000);
     }
-    setTimeout(() => { console.log("dfdkfhfsdf"); }, 10000);
 }
 const networkToUse = "mainnet";
 //Select our network defined in alephium.config.ts
@@ -157,5 +162,6 @@ web3_1.web3.setCurrentNodeProvider(nodeProvider);
 Array.from(Array(4).keys()).forEach((group) => {
     //distribute(configuration.networks[networkToUse].privateKeys[group], group, "Walph");
     //distribute(configuration.networks[networkToUse].privateKeys[group], group, "Walph50HodlAlf");
-    blitz(group, "WalphTimed");
+    //blitz(group, "WalphTimed");
 });
+setTimeout(() => { console.log("dfsfd"); }, 1000);

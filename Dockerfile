@@ -15,6 +15,5 @@ RUN yarn
 # Bundle app source
 COPY . .
 RUN yarn run build
-RUN yarn global add pm2
 
-CMD [ "pm2-runtime", "dist/src/bot.js" ]
+CMD [ "yarn", "run", "dist/src/bot.js" ]

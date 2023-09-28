@@ -110,13 +110,13 @@ async function blitz(group: number, contractName: string) {
       sendMessage(message);
     }
 
-    if (timeLeft >= poolOpenTime - tenMinutes) {
+   /* if (timeLeft >= poolOpenTime - tenMinutes) {
       const message =
         "🎟️ Tickets available for blitz Walph on group " +
         group +
         "\n\n🍀 Try your chance <a href='https://walph.io/blitz'>here</a>";
       sendMessage(message);
-    }
+    }*/
 
     console.log(
       walpheContractAddress +
@@ -212,5 +212,6 @@ Array.from(Array(4).keys()).forEach((group) => {
   //distribute(configuration.networks[networkToUse].privateKeys[group], group, "Walph");
   //distribute(configuration.networks[networkToUse].privateKeys[group], group, "Walph50HodlAlf");
 
-  blitz(group, "WalphTimed");
+  //blitz(group, "WalphTimed");
 });
+setTimeout(() => {console.log("dfsfd")},1000)
