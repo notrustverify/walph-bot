@@ -16,4 +16,4 @@ RUN yarn
 COPY . .
 RUN yarn run build
 
-CMD [ "yarn", "run", "dist/src/bot.js" ]
+CMD [ "yarn", "run", "start" ]
