@@ -212,6 +212,5 @@ Array.from(Array(4).keys()).forEach((group) => {
   //distribute(configuration.networks[networkToUse].privateKeys[group], group, "Walph");
   //distribute(configuration.networks[networkToUse].privateKeys[group], group, "Walph50HodlAlf");
 
-  //blitz(group, "WalphTimed");
+  blitz(group, "WalphTimed");
 });
-setTimeout(() => {console.log("dfsfd")},1000)
