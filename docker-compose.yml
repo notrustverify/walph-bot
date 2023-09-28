@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  walphle-watcher:
+  walph-bot:
     restart: 'unless-stopped'
     build:
       context: ./
