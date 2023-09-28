@@ -27,7 +27,7 @@ const retryFetch = fetchRetry.default(fetch, {
   retryDelay: 1000,
 });
 
-const token = process.env.TG_TOKEN;
+const token = process.env.TG_TOKEN ?? "";
 const chatId = "@walphLottery";
 const bot = new TelegramBot(token, { polling: false });
 
