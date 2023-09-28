@@ -1,7 +1,10 @@
 import { Configuration } from '@alephium/cli'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
+import * as dotenv from 'dotenv'
 
 export type Settings = {}
+
+dotenv.config()
 
 const configuration: Configuration<Settings> = {
   networks: {

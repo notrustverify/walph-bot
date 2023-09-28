@@ -34,9 +34,9 @@ const node_telegram_bot_api_1 = __importDefault(require("node-telegram-bot-api")
 const fetchRetry = __importStar(require("fetch-retry"));
 const retryFetch = fetchRetry.default(fetch, {
     retries: 10,
-    retryDelay: 1000,
+    retryDelay: 10 * 1000,
 });
-const token = process.env.TG_TOKEN;
+const token = process.env.TG_TOKEN ?? "";
 const chatId = "@walphLottery";
 const bot = new node_telegram_bot_api_1.default(token, { polling: false });
 const rtf1 = new Intl.RelativeTimeFormat("en", { style: "short" });
@@ -54,9 +54,7 @@ async function blitz(group, contractName) {
     //Make sure it match your address group
     const accountGroup = group;
     const deployed = deployments.getDeployedContractResult(accountGroup, contractName);
-    const walpheContractId = deployed.contractInstance.contractId;
     const walpheContractAddress = deployed.contractInstance.address;
-    let drawInProgress = false;
     const WalphState = ts_1.WalphTimed.at(walpheContractAddress);
     const initialState = await WalphState.fetchState();
     const blitzChecker = async function () {
@@ -80,7 +78,7 @@ async function blitz(group, contractName) {
                 timeLeftFormat +
                 "</b>\n\n🏆 Prize pot: " +
                 prizePot +
-                "ℵ\n\n<a href='https://walph.io/blitz'>🧇 Play here</a>";
+                " ℵ\n\n<a href='https://walph.io/blitz'>🧇 Play here</a>";
             sendMessage(message);
         }
         if (timeLeft <= tenMinutes && numAttendees > 0) {
@@ -90,7 +88,7 @@ async function blitz(group, contractName) {
                 "\n\n😱 <b>10 minutes left till next draw</b>\n\n" +
                 "🏆 Prize pot: " +
                 prizePot +
-                "ℵ\n\n<a href='https://walph.io/blitz'>🧇 Play here</a>";
+                " ℵ\n\n<a href='https://walph.io/blitz'>🧇 Play here</a>";
             sendMessage(message);
         }
         if (timeLeft >= poolOpenTime - tenMinutes) {
@@ -103,20 +101,51 @@ async function blitz(group, contractName) {
             " - Next draw: " +
             new Date(Number(initialState.fields.drawTimestamp)));
     };
+    async function getWinner() {
+        const deployments = await cli_1.Deployments.from("./artifacts/.deployments." + networkToUse + ".json");
+        //Make sure it match your address group
+        const accountGroup = group;
+        const deployed = deployments.getDeployedContractResult(accountGroup, contractName);
+        const walpheContractAddress = deployed.contractInstance.address;
+        const WalphState = ts_1.WalphTimed.at(walpheContractAddress);
+        let initialState = await WalphState.fetchState();
+        const actualDrawTimestamp = initialState.fields.drawTimestamp;
+        const actualNumAttendees = initialState.fields.numAttendees;
+        if (actualNumAttendees > 0) {
+            let newState = await WalphState.fetchState();
+            let state = newState.fields.drawTimestamp;
+            while (actualDrawTimestamp === state) {
+                newState = await WalphState.fetchState();
+                state = newState.fields.drawTimestamp;
+                await (0, web3_1.sleep)(10 * 1000);
+            }
+            initialState = await WalphState.fetchState();
+            const winner = initialState.fields.lastWinner.toString().slice(0, 6) + "..." + initialState.fields.lastWinner.toString().slice(-6);
+            const message = "🎲 Blitz Walph on group " +
+                group + "drawn" +
+                +"\n\n🎉 Winner: " + winner +
+                "\n\n🍀 Try your chance <a href='https://walph.io/blitz'>here</a>";
+            // sendMessage(message);
+        }
+    }
     const drawTimestamp = Number(initialState.fields.drawTimestamp);
     const timeLeft = drawTimestamp - Date.now();
-    //3 hours
-    if (timeLeft >= threeHours) {
-        console.log("Notification at " + new Date(timeLeft - threeHours + Date.now()));
-        setTimeout(blitzChecker, timeLeft - threeHours);
+    console.log("Group " + group);
+    if (timeLeft > 0) {
+        //3 hours
+        if (timeLeft >= threeHours) {
+            console.log("3 hours - Notification at " + new Date(timeLeft - threeHours + Date.now()));
+            setTimeout(blitzChecker, timeLeft - threeHours);
+        }
+        // ten minutes
+        if (timeLeft >= tenMinutes) {
+            console.log("10 minutes - Notification at " + new Date(timeLeft - tenMinutes + Date.now()));
+            setTimeout(blitzChecker, timeLeft - tenMinutes);
+        }
+        console.log("winner - Notification at " + new Date(timeLeft + Date.now()));
+        setTimeout(getWinner, 1000);
     }
-    // ten minutes
-    if (timeLeft >= tenMinutes) {
-        console.log("Notification at " + new Date(timeLeft - tenMinutes + Date.now()));
-        setTimeout(blitzChecker, timeLeft - tenMinutes);
-    }
-    if (timeLeft >= poolOpenTime - tenMinutes)
-        blitzChecker();
+    setTimeout(() => { console.log("dfdkfhfsdf"); }, 10000);
 }
 const networkToUse = "mainnet";
 //Select our network defined in alephium.config.ts
