@@ -34,7 +34,6 @@ const bot = new TelegramBot(token, { polling: false });
 const rtf1 = new Intl.RelativeTimeFormat("en", { style: "short" });
 const tenMinutes = 10 * 60 * 1000;
 const threeHours = 3 * 3600 * 1000;
-const poolOpenTime = 6 * 3600 * 1000;
 
 let messageCounter = 0; //used to check when a message is sent, when all the message are sent, restart the process
 
@@ -86,7 +85,7 @@ async function blitz(group: number, contractName: string) {
 
     messageCounter += 1;
 
-    if (timeLeft <= threeHours && numAttendees > 0) {
+    if (timeLeft <= threeHours && timeLeft > tenMinutes && numAttendees > 0) {
       let message =
         "Blitz Walph on group " +
         group +
@@ -163,8 +162,8 @@ async function blitz(group: number, contractName: string) {
       const message =
         "🎲 Blitz Walph on group " +
         group +
-        "drawn" +
-        +"\n\n🎉 Winner: " +
+        " drawn" +
+        "\n\n🎉 Winner: " +
         winner +
         "\n\n🍀 Try your chance <a href='https://walph.io/blitz'>here</a>";
       sendMessage(message);
