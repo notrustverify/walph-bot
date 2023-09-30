@@ -35,8 +35,6 @@ const rtf1 = new Intl.RelativeTimeFormat("en", { style: "short" });
 const tenMinutes = 10 * 60 * 1000;
 const threeHours = 3 * 3600 * 1000;
 
-let messageCounter = 0; //used to check when a message is sent, when all the message are sent, restart the process
-
 function sendMessage(message: string) {
   bot.sendMessage(chatId, message, { parse_mode: "HTML" });
 }
@@ -59,19 +57,28 @@ async function blitz(group: number, contractName: string) {
 
   const initialState = await WalphState.fetchState();
 
-  const blitzChecker = async function () {
-    const balanceContract =
-      await nodeProvider.addresses.getAddressesAddressBalance(
-        walpheContractAddress
-      );
-    console.log(
-      walpheContractAddress +
-        " - Balance contract is " +
-        balanceContract.balanceHint
-    );
+  async function messageFomo(timeMinutes: number) {
+    const initialState = await WalphState.fetchState();
+    const drawTimestamp = Number(initialState.fields.drawTimestamp);
+    const prizePot = Number(initialState.fields.balance / ONE_ALPH);
+    const numAttendees = Number(initialState.fields.numAttendees);
 
-    const WalphState = WalphTimed.at(walpheContractAddress);
+    if (numAttendees > 0) {
+      //ten minutes
+      const message =
+        "🚨 Blitz Walph on group " +
+        group +
+        "\n\n😱 <b>" +
+        timeMinutes +
+        "minutes left till next draw</b>\n\n" +
+        "🏆 Prize pot: " +
+        prizePot +
+        " ℵ\n\n<a href='https://walph.io/blitz'>🧇 Play here</a>";
+      sendMessage(message);
+    }
+  }
 
+  async function messageTimeLeft() {
     const initialState = await WalphState.fetchState();
     const drawTimestamp = Number(initialState.fields.drawTimestamp);
     const prizePot = Number(initialState.fields.balance / ONE_ALPH);
@@ -83,9 +90,7 @@ async function blitz(group: number, contractName: string) {
       "hours"
     );
 
-    messageCounter += 1;
-
-    if (timeLeft <= threeHours && timeLeft > tenMinutes && numAttendees > 0) {
+    if (numAttendees > 0) {
       let message =
         "Blitz Walph on group " +
         group +
@@ -96,51 +101,11 @@ async function blitz(group: number, contractName: string) {
         " ℵ\n\n<a href='https://walph.io/blitz'>🧇 Play here</a>";
       sendMessage(message);
     }
-
-    if (timeLeft <= tenMinutes && numAttendees > 0) {
-      //ten minutes
-      const message =
-        "🚨 Blitz Walph on group " +
-        group +
-        "\n\n😱 <b>10 minutes left till next draw</b>\n\n" +
-        "🏆 Prize pot: " +
-        prizePot +
-        " ℵ\n\n<a href='https://walph.io/blitz'>🧇 Play here</a>";
-      sendMessage(message);
-    }
-
-   /* if (timeLeft >= poolOpenTime - tenMinutes) {
-      const message =
-        "🎟️ Tickets available for blitz Walph on group " +
-        group +
-        "\n\n🍀 Try your chance <a href='https://walph.io/blitz'>here</a>";
-      sendMessage(message);
-    }*/
-
-    console.log(
-      walpheContractAddress +
-        " - Next draw: " +
-        new Date(Number(initialState.fields.drawTimestamp))
-    );
-  };
+  }
 
   async function getWinner() {
-    const deployments = await Deployments.from(
-      "./artifacts/.deployments." + networkToUse + ".json"
-    );
-
-    //Make sure it match your address group
-    const accountGroup = group;
-    const deployed = deployments.getDeployedContractResult(
-      accountGroup,
-      contractName
-    );
-
-    const walpheContractAddress = deployed.contractInstance.address;
-    const WalphState = WalphTimed.at(walpheContractAddress);
-
     let initialState = await WalphState.fetchState();
-
+    console.log("start")
     const actualDrawTimestamp = initialState.fields.drawTimestamp;
     const actualNumAttendees = initialState.fields.numAttendees;
 
@@ -174,6 +139,7 @@ async function blitz(group: number, contractName: string) {
   const timeLeft = drawTimestamp - Date.now();
 
   console.log("Group " + group);
+  console.log("Draw is at "+ new Date(drawTimestamp))
   if (timeLeft > 0) {
     //3 hours
     if (timeLeft >= threeHours) {
@@ -181,20 +147,18 @@ async function blitz(group: number, contractName: string) {
         "3 hours - Notification at " +
           new Date(timeLeft - threeHours + Date.now())
       );
-      setTimeout(blitzChecker, timeLeft - threeHours);
+      setTimeout(messageTimeLeft, timeLeft - threeHours);
     }
 
     // ten minutes
     if (timeLeft >= tenMinutes) {
       console.log(
-        "10 minutes - Notification at " +
+        "10 minutes & winner - Notification at " +
           new Date(timeLeft - tenMinutes + Date.now())
       );
-      setTimeout(blitzChecker, timeLeft - tenMinutes);
+      setTimeout(messageFomo, timeLeft - tenMinutes, 10);
+      setTimeout(getWinner, timeLeft - tenMinutes );
     }
-
-    console.log("winner - Notification at " + new Date(timeLeft + Date.now()));
-    setTimeout(getWinner, 1000);
   }
 }
 
@@ -207,9 +171,10 @@ const nodeProvider = new NodeProvider(network.nodeUrl, undefined, retryFetch);
 //Sometimes, it's convenient to setup a global NodeProvider for your project:
 web3.setCurrentNodeProvider(nodeProvider);
 
-Array.from(Array(4).keys()).forEach((group) => {
+const groupArg = parseInt(process.argv.slice(2)[0])
+
   //distribute(configuration.networks[networkToUse].privateKeys[group], group, "Walph");
   //distribute(configuration.networks[networkToUse].privateKeys[group], group, "Walph50HodlAlf");
 
-  blitz(group, "WalphTimed");
-});
+  blitz(groupArg, "WalphTimed");
+
