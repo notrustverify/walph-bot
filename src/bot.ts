@@ -178,3 +178,17 @@ const groupArg = parseInt(process.argv.slice(2)[0])
 
   blitz(groupArg, "WalphTimed");
 
+
+  {
+    name: 'group0',
+    script: 'dist/src/bot.js',
+    args: '0',
+  },
+  {
+    name: 'group1',
+    script: './dist/src/bot.js',
+    args: '1',
+  }
+  
+  
+

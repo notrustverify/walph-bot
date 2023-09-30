@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "build": "tsc --build .",
-    "start": "node dist/src/bot.js"
+    "start": "node dist/src/bot.js",
+    "start-pm2": "pm2-runtime start -- ecosystem.config.js"
   },
   "dependencies": {
     "@alephium/cli": "^0.22.0",
