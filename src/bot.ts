@@ -138,13 +138,12 @@ async function blitz(group: number, contractName: string) {
   const drawTimestamp = Number(initialState.fields.drawTimestamp);
   const timeLeft = drawTimestamp - Date.now();
 
-  console.log("Group " + group);
-  console.log("Draw is at "+ new Date(drawTimestamp))
+  console.log(group+" - Draw is at "+ new Date(drawTimestamp))
   if (timeLeft > 0) {
     //3 hours
     if (timeLeft >= threeHours) {
       console.log(
-        "3 hours - Notification at " +
+        group+" - 3 hours - Notification at " +
           new Date(timeLeft - threeHours + Date.now())
       );
       setTimeout(messageTimeLeft, timeLeft - threeHours);
@@ -153,7 +152,7 @@ async function blitz(group: number, contractName: string) {
     // ten minutes
     if (timeLeft >= tenMinutes) {
       console.log(
-        "10 minutes & winner - Notification at " +
+        group+" - 10 minutes & winner - Notification at " +
           new Date(timeLeft - tenMinutes + Date.now())
       );
       setTimeout(messageFomo, timeLeft - tenMinutes, 10);
