@@ -177,18 +177,6 @@ const groupArg = parseInt(process.argv.slice(2)[0])
   //distribute(configuration.networks[networkToUse].privateKeys[group], group, "Walph50HodlAlf");
 
   blitz(groupArg, "WalphTimed");
-
-
-  {
-    name: 'group0',
-    script: 'dist/src/bot.js',
-    args: '0',
-  },
-  {
-    name: 'group1',
-    script: './dist/src/bot.js',
-    args: '1',
-  }
   
   
 
