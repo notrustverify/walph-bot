@@ -61,7 +61,7 @@ async function blitz(group, contractName) {
         const prizePot = Number(initialState.fields.balance / web3_1.ONE_ALPH);
         const numAttendees = Number(initialState.fields.numAttendees);
         const timeLeft = drawTimestamp - Date.now();
-        if (numAttendees > 0) {
+        if (numAttendees > 0 && timeLeft <= threeHours) {
             //ten minutes
             const message = "🚨 Blitz Walph on group " +
                 group +
@@ -85,7 +85,7 @@ async function blitz(group, contractName) {
         const timeLeft = drawTimestamp - Date.now();
         const timeLeftFormat = rtf1.format(Math.round(timeLeft / 3600000), // format to hour
         "hours");
-        if (numAttendees > 0) {
+        if (numAttendees > 0 && timeLeft <= tenMinutes) {
             let message = "Blitz Walph on group " +
                 group +
                 "\n\n⏳<b>" +
@@ -104,7 +104,7 @@ async function blitz(group, contractName) {
         const actualDrawTimestamp = initialState.fields.drawTimestamp;
         const actualNumAttendees = initialState.fields.numAttendees;
         const timeLeft = drawTimestamp - Date.now();
-        if (actualNumAttendees > 0) {
+        if (actualNumAttendees > 0 && timeLeft <= tenMinutes) {
             let newState = await WalphState.fetchState();
             let state = newState.fields.drawTimestamp;
             while (actualDrawTimestamp === state) {
@@ -133,18 +133,10 @@ async function blitz(group, contractName) {
     console.log(group + " - Draw is at " + new Date(drawTimestamp));
     if (timeLeft > 0) {
         //3 hours
-        if (timeLeft >= threeHours) {
-            console.log(group + " - 3 hours - Notification at " +
-                new Date(timeLeft - threeHours + Date.now()));
-            setTimeout(messageTimeLeft, timeLeft - threeHours);
-        }
+        messageTimeLeft();
         // ten minutes
-        if (timeLeft >= tenMinutes) {
-            console.log(group + " - 10 minutes & winner - Notification at " +
-                new Date(timeLeft - tenMinutes + Date.now()));
-            setTimeout(messageFomo, timeLeft - tenMinutes, 10);
-            setTimeout(getWinner, timeLeft - tenMinutes);
-        }
+        messageFomo(10);
+        getWinner();
     }
 }
 const networkToUse = "mainnet";
