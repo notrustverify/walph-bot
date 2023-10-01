@@ -63,6 +63,8 @@ async function blitz(group: number, contractName: string) {
     const prizePot = Number(initialState.fields.balance / ONE_ALPH);
     const numAttendees = Number(initialState.fields.numAttendees);
 
+    const timeLeft = drawTimestamp - Date.now();
+
     if (numAttendees > 0) {
       //ten minutes
       const message =
@@ -76,6 +78,12 @@ async function blitz(group: number, contractName: string) {
         " ℵ\n\n<a href='https://walph.io/blitz'>🧇 Play here</a>";
       sendMessage(message);
     }
+
+    console.log(
+      group+" - 3 hours - Notification at " +
+        new Date(timeLeft - threeHours + Date.now())
+    );
+    setTimeout(messageTimeLeft, timeLeft - threeHours);
   }
 
   async function messageTimeLeft() {
@@ -101,13 +109,19 @@ async function blitz(group: number, contractName: string) {
         " ℵ\n\n<a href='https://walph.io/blitz'>🧇 Play here</a>";
       sendMessage(message);
     }
+
+    console.log(
+      group+" - 10 minutes - Notification at " +
+        new Date(timeLeft - tenMinutes + Date.now())
+    );
+    setTimeout(messageFomo, timeLeft - tenMinutes, 10);
   }
 
   async function getWinner() {
     let initialState = await WalphState.fetchState();
-    console.log("start")
     const actualDrawTimestamp = initialState.fields.drawTimestamp;
     const actualNumAttendees = initialState.fields.numAttendees;
+    const timeLeft = drawTimestamp - Date.now();
 
     if (actualNumAttendees > 0) {
       let newState = await WalphState.fetchState();
@@ -133,6 +147,12 @@ async function blitz(group: number, contractName: string) {
         "\n\n🍀 Try your chance <a href='https://walph.io/blitz'>here</a>";
       sendMessage(message);
     }
+
+    console.log(
+      group+" - winner - Notification at " +
+        new Date(timeLeft - tenMinutes + Date.now())
+    );
+    setTimeout(getWinner, timeLeft - tenMinutes );
   }
 
   const drawTimestamp = Number(initialState.fields.drawTimestamp);
@@ -175,7 +195,6 @@ const groupArg = parseInt(process.argv.slice(2)[0])
   //distribute(configuration.networks[networkToUse].privateKeys[group], group, "Walph");
   //distribute(configuration.networks[networkToUse].privateKeys[group], group, "Walph50HodlAlf");
 
-  blitz(groupArg, "WalphTimed");
-  
-  
+ blitz(groupArg, "WalphTimed");
+
 

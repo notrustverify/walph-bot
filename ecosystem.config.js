@@ -4,6 +4,7 @@ module.exports = {
     name: 'group0',
     script: 'dist/src/bot.js',
     args: '0',
+    autorestart: true
   },
   {
     name: 'group1',

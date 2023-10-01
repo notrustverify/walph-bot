@@ -60,6 +60,7 @@ async function blitz(group, contractName) {
         const drawTimestamp = Number(initialState.fields.drawTimestamp);
         const prizePot = Number(initialState.fields.balance / web3_1.ONE_ALPH);
         const numAttendees = Number(initialState.fields.numAttendees);
+        const timeLeft = drawTimestamp - Date.now();
         if (numAttendees > 0) {
             //ten minutes
             const message = "🚨 Blitz Walph on group " +
@@ -72,6 +73,9 @@ async function blitz(group, contractName) {
                 " ℵ\n\n<a href='https://walph.io/blitz'>🧇 Play here</a>";
             sendMessage(message);
         }
+        console.log(group + " - 3 hours - Notification at " +
+            new Date(timeLeft - threeHours + Date.now()));
+        setTimeout(messageTimeLeft, timeLeft - threeHours);
     }
     async function messageTimeLeft() {
         const initialState = await WalphState.fetchState();
@@ -91,12 +95,15 @@ async function blitz(group, contractName) {
                 " ℵ\n\n<a href='https://walph.io/blitz'>🧇 Play here</a>";
             sendMessage(message);
         }
+        console.log(group + " - 10 minutes - Notification at " +
+            new Date(timeLeft - tenMinutes + Date.now()));
+        setTimeout(messageFomo, timeLeft - tenMinutes, 10);
     }
     async function getWinner() {
         let initialState = await WalphState.fetchState();
-        console.log("start");
         const actualDrawTimestamp = initialState.fields.drawTimestamp;
         const actualNumAttendees = initialState.fields.numAttendees;
+        const timeLeft = drawTimestamp - Date.now();
         if (actualNumAttendees > 0) {
             let newState = await WalphState.fetchState();
             let state = newState.fields.drawTimestamp;
@@ -117,21 +124,23 @@ async function blitz(group, contractName) {
                 "\n\n🍀 Try your chance <a href='https://walph.io/blitz'>here</a>";
             sendMessage(message);
         }
+        console.log(group + " - winner - Notification at " +
+            new Date(timeLeft - tenMinutes + Date.now()));
+        setTimeout(getWinner, timeLeft - tenMinutes);
     }
     const drawTimestamp = Number(initialState.fields.drawTimestamp);
     const timeLeft = drawTimestamp - Date.now();
-    console.log("Group " + group);
-    console.log("Draw is at " + new Date(drawTimestamp));
+    console.log(group + " - Draw is at " + new Date(drawTimestamp));
     if (timeLeft > 0) {
         //3 hours
         if (timeLeft >= threeHours) {
-            console.log("3 hours - Notification at " +
+            console.log(group + " - 3 hours - Notification at " +
                 new Date(timeLeft - threeHours + Date.now()));
             setTimeout(messageTimeLeft, timeLeft - threeHours);
         }
         // ten minutes
         if (timeLeft >= tenMinutes) {
-            console.log("10 minutes & winner - Notification at " +
+            console.log(group + " - 10 minutes & winner - Notification at " +
                 new Date(timeLeft - tenMinutes + Date.now()));
             setTimeout(messageFomo, timeLeft - tenMinutes, 10);
             setTimeout(getWinner, timeLeft - tenMinutes);
