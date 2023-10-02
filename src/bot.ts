@@ -59,6 +59,23 @@ async function blitz(group: number, contractName: string) {
 
   const initialState = await WalphState.fetchState();
 
+  async function waitForNewTimestamp(sleepSec){
+    let newState = await WalphState.fetchState();
+    const actualDrawTimestamp = initialState.fields.drawTimestamp;
+
+
+      let state = newState.fields.drawTimestamp;
+      while (actualDrawTimestamp === state) {
+        newState = await WalphState.fetchState();
+        state = newState.fields.drawTimestamp;
+        console.log("sleep")
+        await sleep(sleepSec * 1000);
+      }
+
+      return Number(state)
+  }
+
+
   async function messageFomo(timeMinutes: number) {
     const initialState = await WalphState.fetchState();
     let drawTimestamp = Number(initialState.fields.drawTimestamp);
@@ -66,6 +83,22 @@ async function blitz(group: number, contractName: string) {
     const numAttendees = Number(initialState.fields.numAttendees);
 
     let timeLeft = drawTimestamp - Date.now();
+
+async function waitForNewTimestamp(sleepSec){
+    let newState = await WalphState.fetchState();
+    const actualDrawTimestamp = initialState.fields.drawTimestamp;
+
+
+      let state = newState.fields.drawTimestamp;
+      while (actualDrawTimestamp === state) {
+        newState = await WalphState.fetchState();
+        state = newState.fields.drawTimestamp;
+        console.log("sleep")
+        await sleep(sleepSec * 1000);
+      }
+
+      return Number(state)
+  }
 
     if (numAttendees > 0 && timeLeft <= tenMinutes) {
       //ten minutes
@@ -95,21 +128,7 @@ async function blitz(group: number, contractName: string) {
   }
 
 
-  async function waitForNewTimestamp(sleepSec){
-    let newState = await WalphState.fetchState();
-    const actualDrawTimestamp = initialState.fields.drawTimestamp;
-
-
-      let state = newState.fields.drawTimestamp;
-      while (actualDrawTimestamp === state) {
-        newState = await WalphState.fetchState();
-        state = newState.fields.drawTimestamp;
-        console.log("sleep")
-        await sleep(sleepSec * 1000);
-      }
-
-      return Number(state)
-  }
+  
 
   async function messageTimeLeft() {
     const initialState = await WalphState.fetchState();
@@ -132,8 +151,8 @@ async function blitz(group: number, contractName: string) {
         "</b>\n\n🏆 Prize pot: " +
         prizePot +
         " ℵ\n\n<a href='https://walph.io/blitz'>🧇 Play here</a>";
-      //sendMessage(message);
-      console.log("send message")
+      sendMessage(message);
+      //console.log("send message")
     }
 
 
@@ -195,7 +214,6 @@ async function blitz(group: number, contractName: string) {
   if (timeLeft > 0) {
     //3 hours
    messageTimeLeft()
-    
 
     // ten minutes
     messageFomo(10)
