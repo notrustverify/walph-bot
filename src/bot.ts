@@ -132,8 +132,8 @@ async function blitz(group: number, contractName: string) {
         "</b>\n\n🏆 Prize pot: " +
         prizePot +
         " ℵ\n\n<a href='https://walph.io/blitz'>🧇 Play here</a>";
-      //sendMessage(message);
-      console.log("send message")
+      sendMessage(message);
+      //console.log("send message")
     }
 
 
