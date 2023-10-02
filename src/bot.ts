@@ -81,7 +81,7 @@ async function blitz(group: number, contractName: string) {
       sendMessage(message);
 
     }
-    
+
     if(timeLeft <= tenMinutes){
       drawTimestamp = await waitForNewTimestamp(1400) // waiting for new timestamp
         timeLeft = drawTimestamp - Date.now();
@@ -132,8 +132,8 @@ async function blitz(group: number, contractName: string) {
         "</b>\n\n🏆 Prize pot: " +
         prizePot +
         " ℵ\n\n<a href='https://walph.io/blitz'>🧇 Play here</a>";
-      sendMessage(message);
-      //console.log("send message")
+      //sendMessage(message);
+      console.log("send message")
     }
 
 
@@ -174,6 +174,11 @@ async function blitz(group: number, contractName: string) {
       sendMessage(message);
     }
     
+    if(timeLeft <= tenMinutes){
+      drawTimestamp = await waitForNewTimestamp(30) // waiting for new timestamp
+        timeLeft = drawTimestamp - Date.now();
+  }
+
     timeLeft = drawTimestamp - Date.now();
 
     console.log(
