@@ -80,10 +80,12 @@ async function blitz(group: number, contractName: string) {
         " ℵ\n\n<a href='https://walph.io/blitz'>🧇 Play here</a>";
       sendMessage(message);
 
-      drawTimestamp = await waitForNewTimestamp(1400)
-      timeLeft = drawTimestamp - Date.now();
-
     }
+    
+    if(timeLeft <= tenMinutes){
+      drawTimestamp = await waitForNewTimestamp(1400) // waiting for new timestamp
+        timeLeft = drawTimestamp - Date.now();
+  }
 
     console.log(
       group+" - 10 minutes - Notification at " +
@@ -102,6 +104,7 @@ async function blitz(group: number, contractName: string) {
       while (actualDrawTimestamp === state) {
         newState = await WalphState.fetchState();
         state = newState.fields.drawTimestamp;
+        console.log("sleep")
         await sleep(sleepSec * 1000);
       }
 
@@ -129,11 +132,14 @@ async function blitz(group: number, contractName: string) {
         "</b>\n\n🏆 Prize pot: " +
         prizePot +
         " ℵ\n\n<a href='https://walph.io/blitz'>🧇 Play here</a>";
-      sendMessage(message);
+      //sendMessage(message);
+      console.log("send message")
+    }
 
-      drawTimestamp = await waitForNewTimestamp(1200) // waiting for new timestamp
-      timeLeft = drawTimestamp - Date.now();
 
+    if(timeLeft <= threeHours){
+        drawTimestamp = await waitForNewTimestamp(1200) // waiting for new timestamp
+          timeLeft = drawTimestamp - Date.now();
     }
 
     console.log(
