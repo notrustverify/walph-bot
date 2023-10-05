@@ -33,15 +33,19 @@ export namespace WalphTimedTypes {
     poolSize: bigint;
     poolOwner: Address;
     poolFees: bigint;
-    tokenIdToHold: HexString;
     ticketPrice: bigint;
     drawTimestamp: bigint;
-    minTokenAmountToHold: bigint;
+    repeatEvery: bigint;
     open: boolean;
     balance: bigint;
     feesBalance: bigint;
     numAttendees: bigint;
     attendees: [
+      Address,
+      Address,
+      Address,
+      Address,
+      Address,
       Address,
       Address,
       Address,
@@ -135,11 +139,10 @@ export namespace WalphTimedTypes {
   export type PoolOpenEvent = Omit<ContractEvent, "fields">;
   export type PoolCloseEvent = Omit<ContractEvent, "fields">;
   export type DestroyEvent = ContractEvent<{ from: Address }>;
-  export type NewMinTokenAmountToHoldEvent = ContractEvent<{
-    newAmount: bigint;
-  }>;
   export type WinnerEvent = ContractEvent<{ address: Address }>;
   export type PoolDrawnEvent = ContractEvent<{ amount: bigint }>;
+  export type NewRepeatEveryEvent = ContractEvent<{ newRepeat: bigint }>;
+  export type PoolFullEvent = Omit<ContractEvent, "fields">;
 
   export interface CallMethodTable {
     getPoolState: {
@@ -186,9 +189,10 @@ class Factory extends ContractFactory<
     PoolOpen: 1,
     PoolClose: 2,
     Destroy: 3,
-    NewMinTokenAmountToHold: 4,
-    Winner: 5,
-    PoolDrawn: 6,
+    Winner: 4,
+    PoolDrawn: 5,
+    NewRepeatEvery: 6,
+    PoolFull: 7,
   };
   consts = {
     ErrorCodes: {
@@ -197,10 +201,9 @@ class Factory extends ContractFactory<
       PoolAlreadyOpen: BigInt(2),
       PoolClosed: BigInt(3),
       InvalidCaller: BigInt(4),
-      NotEnoughToken: BigInt(5),
       PoolNotFull: BigInt(6),
       InvalidAmount: BigInt(7),
-      TimestampNotReached: BigInt(8),
+      TimestampOrAttendeesNotReached: BigInt(8),
       NoAttendees: BigInt(9),
       NotValidAddress: BigInt(10),
       TimestampReached: BigInt(11),
@@ -305,10 +308,10 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "destroyPool", params);
     },
-    changeMinAmountToHold: async (
-      params: TestContractParams<WalphTimedTypes.Fields, { newAmount: bigint }>
+    changeRepeatEvery: async (
+      params: TestContractParams<WalphTimedTypes.Fields, { newRepeat: bigint }>
     ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "changeMinAmountToHold", params);
+      return testMethod(this, "changeRepeatEvery", params);
     },
   };
 }
@@ -317,8 +320,8 @@ class Factory extends ContractFactory<
 export const WalphTimed = new Factory(
   Contract.fromJson(
     WalphTimedContractJson,
-    "=6-2=2-2+2a=3-1+b=3-1+4=3-1+d=3-1+6=2-2+bf=1-1=2+a=2-3=1-1+a=1+1ac=3-1+1=3-1+7=2-1+ea4=1+fe=11-1+4=30+0016007e0207726e6420697320=952",
-    "9de2e2e8b0766fb5038d466fcf88692ab95cd63f5a02fbcff25732a488d8384f"
+    "=6-2=2-2+2a=3-1+b=3-1+4=3-1+d=3-1+6=2-2+bf=1-1=2+a=2-3=2-1=2-1+a6=1+1bb=3-1+1=3-1+441f9=11-1+4=30+0016007e0207726e6420697320=942",
+    "357d515107b7bec934715fb92984d3ab81344f7e4d8b712a15107e399316ba23"
   )
 );
 
@@ -388,19 +391,6 @@ export class WalphTimedInstance extends ContractInstance {
     );
   }
 
-  subscribeNewMinTokenAmountToHoldEvent(
-    options: EventSubscribeOptions<WalphTimedTypes.NewMinTokenAmountToHoldEvent>,
-    fromCount?: number
-  ): EventSubscription {
-    return subscribeContractEvent(
-      WalphTimed.contract,
-      this,
-      options,
-      "NewMinTokenAmountToHold",
-      fromCount
-    );
-  }
-
   subscribeWinnerEvent(
     options: EventSubscribeOptions<WalphTimedTypes.WinnerEvent>,
     fromCount?: number
@@ -427,15 +417,42 @@ export class WalphTimedInstance extends ContractInstance {
     );
   }
 
+  subscribeNewRepeatEveryEvent(
+    options: EventSubscribeOptions<WalphTimedTypes.NewRepeatEveryEvent>,
+    fromCount?: number
+  ): EventSubscription {
+    return subscribeContractEvent(
+      WalphTimed.contract,
+      this,
+      options,
+      "NewRepeatEvery",
+      fromCount
+    );
+  }
+
+  subscribePoolFullEvent(
+    options: EventSubscribeOptions<WalphTimedTypes.PoolFullEvent>,
+    fromCount?: number
+  ): EventSubscription {
+    return subscribeContractEvent(
+      WalphTimed.contract,
+      this,
+      options,
+      "PoolFull",
+      fromCount
+    );
+  }
+
   subscribeAllEvents(
     options: EventSubscribeOptions<
       | WalphTimedTypes.TicketBoughtEvent
       | WalphTimedTypes.PoolOpenEvent
       | WalphTimedTypes.PoolCloseEvent
       | WalphTimedTypes.DestroyEvent
-      | WalphTimedTypes.NewMinTokenAmountToHoldEvent
       | WalphTimedTypes.WinnerEvent
       | WalphTimedTypes.PoolDrawnEvent
+      | WalphTimedTypes.NewRepeatEveryEvent
+      | WalphTimedTypes.PoolFullEvent
     >,
     fromCount?: number
   ): EventSubscription {

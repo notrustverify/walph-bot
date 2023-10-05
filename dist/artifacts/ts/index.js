@@ -21,4 +21,6 @@ __exportStar(require("./Walf"), exports);
 __exportStar(require("./Walph"), exports);
 __exportStar(require("./Walph50HodlAlf"), exports);
 __exportStar(require("./WalphTimed"), exports);
+__exportStar(require("./WalphTimedToken"), exports);
+__exportStar(require("./Wayin"), exports);
 __exportStar(require("./scripts"), exports);

@@ -18,9 +18,10 @@ class Factory extends web3_1.ContractFactory {
             PoolOpen: 1,
             PoolClose: 2,
             Destroy: 3,
-            NewMinTokenAmountToHold: 4,
-            Winner: 5,
-            PoolDrawn: 6,
+            Winner: 4,
+            PoolDrawn: 5,
+            NewRepeatEvery: 6,
+            PoolFull: 7,
         };
         this.consts = {
             ErrorCodes: {
@@ -29,10 +30,9 @@ class Factory extends web3_1.ContractFactory {
                 PoolAlreadyOpen: BigInt(2),
                 PoolClosed: BigInt(3),
                 InvalidCaller: BigInt(4),
-                NotEnoughToken: BigInt(5),
                 PoolNotFull: BigInt(6),
                 InvalidAmount: BigInt(7),
-                TimestampNotReached: BigInt(8),
+                TimestampOrAttendeesNotReached: BigInt(8),
                 NoAttendees: BigInt(9),
                 NotValidAddress: BigInt(10),
                 TimestampReached: BigInt(11),
@@ -75,8 +75,8 @@ class Factory extends web3_1.ContractFactory {
             destroyPool: async (params) => {
                 return (0, web3_1.testMethod)(this, "destroyPool", params);
             },
-            changeMinAmountToHold: async (params) => {
-                return (0, web3_1.testMethod)(this, "changeMinAmountToHold", params);
+            changeRepeatEvery: async (params) => {
+                return (0, web3_1.testMethod)(this, "changeRepeatEvery", params);
             },
         };
     }
@@ -88,7 +88,7 @@ class Factory extends web3_1.ContractFactory {
     }
 }
 // Use this object to test and deploy the contract
-exports.WalphTimed = new Factory(web3_1.Contract.fromJson(WalphTimed_ral_json_1.default, "=6-2=2-2+2a=3-1+b=3-1+4=3-1+d=3-1+6=2-2+bf=1-1=2+a=2-3=1-1+a=1+1ac=3-1+1=3-1+7=2-1+ea4=1+fe=11-1+4=30+0016007e0207726e6420697320=952", "9de2e2e8b0766fb5038d466fcf88692ab95cd63f5a02fbcff25732a488d8384f"));
+exports.WalphTimed = new Factory(web3_1.Contract.fromJson(WalphTimed_ral_json_1.default, "=6-2=2-2+2a=3-1+b=3-1+4=3-1+d=3-1+6=2-2+bf=1-1=2+a=2-3=2-1=2-1+a6=1+1bb=3-1+1=3-1+441f9=11-1+4=30+0016007e0207726e6420697320=942", "357d515107b7bec934715fb92984d3ab81344f7e4d8b712a15107e399316ba23"));
 // Use this class to interact with the blockchain
 class WalphTimedInstance extends web3_1.ContractInstance {
     constructor(address) {
@@ -126,14 +126,17 @@ class WalphTimedInstance extends web3_1.ContractInstance {
     subscribeDestroyEvent(options, fromCount) {
         return (0, web3_1.subscribeContractEvent)(exports.WalphTimed.contract, this, options, "Destroy", fromCount);
     }
-    subscribeNewMinTokenAmountToHoldEvent(options, fromCount) {
-        return (0, web3_1.subscribeContractEvent)(exports.WalphTimed.contract, this, options, "NewMinTokenAmountToHold", fromCount);
-    }
     subscribeWinnerEvent(options, fromCount) {
         return (0, web3_1.subscribeContractEvent)(exports.WalphTimed.contract, this, options, "Winner", fromCount);
     }
     subscribePoolDrawnEvent(options, fromCount) {
         return (0, web3_1.subscribeContractEvent)(exports.WalphTimed.contract, this, options, "PoolDrawn", fromCount);
+    }
+    subscribeNewRepeatEveryEvent(options, fromCount) {
+        return (0, web3_1.subscribeContractEvent)(exports.WalphTimed.contract, this, options, "NewRepeatEvery", fromCount);
+    }
+    subscribePoolFullEvent(options, fromCount) {
+        return (0, web3_1.subscribeContractEvent)(exports.WalphTimed.contract, this, options, "PoolFull", fromCount);
     }
     subscribeAllEvents(options, fromCount) {
         return (0, web3_1.subscribeContractEvents)(exports.WalphTimed.contract, this, options, fromCount);

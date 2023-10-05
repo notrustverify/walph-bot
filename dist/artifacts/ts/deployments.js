@@ -8,26 +8,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loadDeployments = void 0;
 const _1 = require(".");
-const _deployments_mainnet_json_1 = __importDefault(require("../.deployments.mainnet.json"));
-const _deployments_testnet_json_1 = __importDefault(require("../.deployments.testnet.json"));
 const _deployments_devnet_json_1 = __importDefault(require("../.deployments.devnet.json"));
 function toDeployments(json) {
     const contracts = {
-        Walph: {
-            ...json.contracts["Walph"],
-            contractInstance: _1.Walph.at(json.contracts["Walph"].contractInstance.address),
+        WalphTimed_BlitzOneDay: {
+            ...json.contracts["WalphTimed:BlitzOneDay"],
+            contractInstance: _1.WalphTimed.at(json.contracts["WalphTimed:BlitzOneDay"].contractInstance.address),
         },
-        Walph50HodlAlf: {
-            ...json.contracts["Walph50HodlAlf"],
-            contractInstance: _1.Walph50HodlAlf.at(json.contracts["Walph50HodlAlf"].contractInstance.address),
+        WalphTimed_BlitzOneDayOneAlph: {
+            ...json.contracts["WalphTimed:BlitzOneDayOneAlph"],
+            contractInstance: _1.WalphTimed.at(json.contracts["WalphTimed:BlitzOneDayOneAlph"].contractInstance.address),
         },
-        Walf: {
-            ...json.contracts["Walf"],
-            contractInstance: _1.Walf.at(json.contracts["Walf"].contractInstance.address),
+        WalphTimed_BlitzThreeDays: {
+            ...json.contracts["WalphTimed:BlitzThreeDays"],
+            contractInstance: _1.WalphTimed.at(json.contracts["WalphTimed:BlitzThreeDays"].contractInstance.address),
         },
-        WalphTimed: {
-            ...json.contracts["WalphTimed"],
-            contractInstance: _1.WalphTimed.at(json.contracts["WalphTimed"].contractInstance.address),
+        WalphTimedToken_BlitzThreeDaysAlf: {
+            ...json.contracts["WalphTimedToken:BlitzThreeDaysAlf"],
+            contractInstance: _1.WalphTimedToken.at(json.contracts["WalphTimedToken:BlitzThreeDaysAlf"].contractInstance
+                .address),
+        },
+        WalphTimedToken_BlitzThreeDaysAyin: {
+            ...json.contracts["WalphTimedToken:BlitzThreeDaysAyin"],
+            contractInstance: _1.WalphTimedToken.at(json.contracts["WalphTimedToken:BlitzThreeDaysAyin"].contractInstance
+                .address),
         },
     };
     return {
@@ -36,13 +40,7 @@ function toDeployments(json) {
     };
 }
 function loadDeployments(networkId, deployerAddress) {
-    const deployments = networkId === "mainnet"
-        ? _deployments_mainnet_json_1.default
-        : networkId === "testnet"
-            ? _deployments_testnet_json_1.default
-            : networkId === "devnet"
-                ? _deployments_devnet_json_1.default
-                : undefined;
+    const deployments = networkId === "devnet" ? _deployments_devnet_json_1.default : undefined;
     if (deployments === undefined) {
         throw Error("The contract has not been deployed to the " + networkId);
     }

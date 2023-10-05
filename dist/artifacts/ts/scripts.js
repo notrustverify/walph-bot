@@ -6,11 +6,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DestroyBlitz = exports.Draw = exports.WithdrawFees = exports.Destroy = exports.Close = exports.Open = exports.BuyTicketToken = exports.BuyTimedWithoutToken = exports.BuyWithoutToken = exports.Buy = void 0;
+exports.DestroyBlitz = exports.Draw = exports.WithdrawFees = exports.Destroy = exports.Close = exports.Open = exports.BuyTicketToken = exports.BuyTimedWithToken = exports.BuyTimedWithoutToken = exports.BuyWithoutToken = exports.Buy = void 0;
 const web3_1 = require("@alephium/web3");
 const Buy_ral_json_1 = __importDefault(require("../Buy.ral.json"));
 const BuyWithoutToken_ral_json_1 = __importDefault(require("../BuyWithoutToken.ral.json"));
 const BuyTimedWithoutToken_ral_json_1 = __importDefault(require("../BuyTimedWithoutToken.ral.json"));
+const BuyTimedWithToken_ral_json_1 = __importDefault(require("../BuyTimedWithToken.ral.json"));
 const BuyTicketToken_ral_json_1 = __importDefault(require("../BuyTicketToken.ral.json"));
 const Open_ral_json_1 = __importDefault(require("../Open.ral.json"));
 const Close_ral_json_1 = __importDefault(require("../Close.ral.json"));
@@ -21,6 +22,7 @@ const DestroyBlitz_ral_json_1 = __importDefault(require("../DestroyBlitz.ral.jso
 exports.Buy = new web3_1.ExecutableScript(web3_1.Script.fromJson(Buy_ral_json_1.default));
 exports.BuyWithoutToken = new web3_1.ExecutableScript(web3_1.Script.fromJson(BuyWithoutToken_ral_json_1.default));
 exports.BuyTimedWithoutToken = new web3_1.ExecutableScript(web3_1.Script.fromJson(BuyTimedWithoutToken_ral_json_1.default));
+exports.BuyTimedWithToken = new web3_1.ExecutableScript(web3_1.Script.fromJson(BuyTimedWithToken_ral_json_1.default));
 exports.BuyTicketToken = new web3_1.ExecutableScript(web3_1.Script.fromJson(BuyTicketToken_ral_json_1.default));
 exports.Open = new web3_1.ExecutableScript(web3_1.Script.fromJson(Open_ral_json_1.default));
 exports.Close = new web3_1.ExecutableScript(web3_1.Script.fromJson(Close_ral_json_1.default));

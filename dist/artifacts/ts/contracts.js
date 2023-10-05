@@ -8,7 +8,14 @@ const _1 = require(".");
 let contracts = undefined;
 function getContractByCodeHash(codeHash) {
     if (contracts === undefined) {
-        contracts = [_1.Walf, _1.Walph, _1.Walph50HodlAlf, _1.WalphTimed];
+        contracts = [
+            _1.Walf,
+            _1.Walph,
+            _1.Walph50HodlAlf,
+            _1.WalphTimed,
+            _1.WalphTimedToken,
+            _1.Wayin,
+        ];
     }
     const c = contracts.find((c) => c.contract.codeHash === codeHash || c.contract.codeHashDebug === codeHash);
     if (c === undefined) {
