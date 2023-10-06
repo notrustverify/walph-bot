@@ -78,24 +78,25 @@ async function blitz(group, contractName, urlPath) {
     const initialState = await WalphState.fetchState();
     async function waitForNewTimestamp(sleepSec) {
         let newState = await WalphState.fetchState();
-        const actualDrawTimestamp = initialState.fields.drawTimestamp;
-        let state = newState.fields.drawTimestamp;
+        const actualDrawTimestamp = newState.fields.drawTimestamp;
+        let state = actualDrawTimestamp;
+        //console.log("before",actualDrawTimestamp,state)
         while (actualDrawTimestamp === state) {
             newState = await WalphState.fetchState();
             state = newState.fields.drawTimestamp;
-            //console.log(actualDrawTimestamp,state)
+            //console.log("during",actualDrawTimestamp,state)
             await (0, web3_1.sleep)(sleepSec * 1000);
         }
+        //console.log("after",actualDrawTimestamp,state)
         return Number(state);
     }
     async function messageFomo() {
         const initialState = await WalphState.fetchState();
-        const repeatEvery = Number(initialState.fields.repeatEvery) - 10 * 1000;
         let drawTimestamp = Number(initialState.fields.drawTimestamp);
         const prizePot = Number(initialState.fields.balance / web3_1.ONE_ALPH);
         const numAttendees = Number(initialState.fields.numAttendees);
-        let timeLeft = drawTimestamp - Date.now();
-        if (numAttendees > 0 && timeLeft <= repeatEvery) {
+        let timeLeft = drawTimestamp + tenMinutes - Date.now();
+        if (numAttendees > 0 && timeLeft <= tenMinutes && timeLeft > 0) {
             //ten minutes
             const message = "🚨 Blitz Walph on group " +
                 group +
@@ -112,17 +113,17 @@ async function blitz(group, contractName, urlPath) {
         drawTimestamp = await waitForNewTimestamp(1);
         console.log(group +
             " - 10 minutes - Notification at " +
-            new Date(repeatEvery + Date.now()));
-        setTimeout(messageFomo, repeatEvery);
+            new Date(timeLeft + Date.now()));
+        setTimeout(messageFomo, timeLeft);
     }
-    async function messageTimeLeft() {
+    async function messageTimeLeft(whenRun) {
         const initialState = await WalphState.fetchState();
-        const repeatEvery = Number(initialState.fields.repeatEvery) / 2;
+        const repeatEvery = Number(initialState.fields.repeatEvery) / whenRun;
         let drawTimestamp = Number(initialState.fields.drawTimestamp);
         const prizePot = Number(initialState.fields.balance / web3_1.ONE_ALPH);
         const numAttendees = Number(initialState.fields.numAttendees);
         let timeLeft = drawTimestamp - Date.now();
-        if (numAttendees > 0 && timeLeft <= repeatEvery) {
+        if (numAttendees > 0 && timeLeft <= repeatEvery && timeLeft > 120 * 1000) {
             let message = "Blitz Walph on group " +
                 group +
                 "\n\n⏳<b>" +
@@ -133,7 +134,7 @@ async function blitz(group, contractName, urlPath) {
             //sendMessage(message);
             console.log(message);
         }
-        drawTimestamp = await waitForNewTimestamp(1);
+        drawTimestamp = await waitForNewTimestamp(30);
         console.log(group +
             " - 3 hours - Notification at " +
             new Date(repeatEvery + Date.now()));
@@ -144,7 +145,7 @@ async function blitz(group, contractName, urlPath) {
         let drawTimestamp = Number(initialState.fields.drawTimestamp);
         const numAttendees = initialState.fields.numAttendees;
         let timeLeft = drawTimestamp - Date.now();
-        drawTimestamp = await waitForNewTimestamp(1);
+        drawTimestamp = await waitForNewTimestamp(30);
         initialState = await WalphState.fetchState();
         const winner = initialState.fields.lastWinner.toString().slice(0, 6) +
             "..." +
@@ -166,13 +167,11 @@ async function blitz(group, contractName, urlPath) {
     const drawTimestamp = Number(initialState.fields.drawTimestamp);
     const timeLeft = drawTimestamp - Date.now();
     console.log(group + " - Draw is at " + new Date(drawTimestamp));
-    if (timeLeft > 0) {
-        //3 hours
-        messageTimeLeft();
-        // ten minutes
-        getWinner();
-        messageFomo();
-    }
+    messageTimeLeft(2);
+    messageTimeLeft(4);
+    // ten minutes
+    getWinner();
+    messageFomo();
 }
 const networkToUse = "devnet";
 //Select our network defined in alephium.config.ts
