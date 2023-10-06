@@ -64,13 +64,16 @@ function formatTimeAgo(duration: number) {
   }
 }
 
-async function blitz(group: number, contractName: string) {
+async function blitz(group: number, contractName: string, urlPath: string) {
   //.deployments contains the info of our `TokenFaucet` deployement, as we need to now the contractId and address
   //This was auto-generated with the `cli deploy` of our `scripts/0_deploy_faucet.ts`
   const deployments = await Deployments.from(
     "./artifacts/.deployments." + networkToUse + ".json"
   );
   //Make sure it match your address group
+
+  const url = "https://walph.io/"+urlPath
+
   const accountGroup = group;
   const deployed = deployments.getDeployedContractResult(
     accountGroup,
@@ -90,48 +93,47 @@ async function blitz(group: number, contractName: string) {
     while (actualDrawTimestamp === state) {
       newState = await WalphState.fetchState();
       state = newState.fields.drawTimestamp;
-
+      //console.log(actualDrawTimestamp,state)
       await sleep(sleepSec * 1000);
     }
     
     return Number(state);
   }
 
-  async function messageFomo(timeMinutes: number) {
+  async function messageFomo() {
     const initialState = await WalphState.fetchState();
-    const repeatEvery = Number(initialState.fields.repeatEvery)- 60*1000
+    const repeatEvery = Number(initialState.fields.repeatEvery) - 10*1000
 
     let drawTimestamp = Number(initialState.fields.drawTimestamp);
     const prizePot = Number(initialState.fields.balance / ONE_ALPH);
     const numAttendees = Number(initialState.fields.numAttendees);
 
     let timeLeft = drawTimestamp - Date.now();
-
-    if (numAttendees > 0 && timeLeft <= repeatEvery && timeLeft > repeatEvery+60*1000) {
+    if (numAttendees > 0 && timeLeft <= repeatEvery) {
       //ten minutes
       const message =
         "🚨 Blitz Walph on group " +
         group +
         "\n\n😱 <b>" +
-        timeMinutes +
-        "minutes left till next draw</b>\n\n" +
+        formatTimeAgo(timeLeft/1000).replace('in','') +
+        " left till next draw</b>\n\n" +
         "🏆 Prize pot: " +
         prizePot +
-        " ℵ\n\n<a href='https://walph.io/blitz'>🧇 Play here</a>";
+        " ℵ\n\n<a href='"+url+"'>🧇 Play here</a>";
       //sendMessage(message);
       console.log(message);
     }
 
      // waiting for new timestamp
      drawTimestamp = await waitForNewTimestamp(1);
-  
+
 
     console.log(
       group +
         " - 10 minutes - Notification at " +
         new Date(repeatEvery + Date.now())
     );
-    setTimeout(messageTimeLeft, repeatEvery, 10);
+    setTimeout(messageFomo, repeatEvery);
   }
 
   async function messageTimeLeft() {
@@ -153,7 +155,7 @@ async function blitz(group: number, contractName: string) {
         formatTimeAgo(timeLeft/1000) +
         "</b>\n\n🏆 Prize pot: " +
         prizePot +
-        " ℵ\n\n<a href='https://walph.io/blitz'>🧇 Play here</a>";
+        " ℵ\n\n<a href='"+url+"'>🧇 Play here</a>";
       //sendMessage(message);
       console.log(message);
     }
@@ -189,7 +191,7 @@ async function blitz(group: number, contractName: string) {
         " drawn" +
         "\n\n🎉 Winner: " +
         winner +
-        "\n\n🍀 Try your chance <a href='https://walph.io/blitz'>here</a>";
+        "\n\n🍀 Try your chance <a href='"+url+"'>here</a>";
       //sendMessage(message);
       console.log(message);
     }
@@ -209,11 +211,11 @@ async function blitz(group: number, contractName: string) {
   console.log(group + " - Draw is at " + new Date(drawTimestamp));
   if (timeLeft > 0) {
     //3 hours
-    // messageTimeLeft();
+    messageTimeLeft();
 
     // ten minutes
     getWinner();
-    messageFomo(10);
+    messageFomo();
   }
 }
 
@@ -231,7 +233,9 @@ const groupArg = parseInt(process.argv.slice(2)[0]);
 //distribute(configuration.networks[networkToUse].privateKeys[group], group, "Walph");
 //distribute(configuration.networks[networkToUse].privateKeys[group], group, "Walph50HodlAlf");
 
-blitz(groupArg, "WalphTimed:BlitzOneDay");
+blitz(groupArg, "WalphTimed:BlitzOneDay", "blitz");
+//blitz(groupArg, "WalphTimed:BlitzOneDayOneAlph");
+//blitz(groupArg, "WalphTimed:BlitzThreeDays");
 
 /*draw(configuration.networks[networkToUse].privateKeys[group], group, "WalphTimed:BlitzOneDayOneAlph");
   draw(configuration.networks[networkToUse].privateKeys[group], group, "WalphTimed:BlitzThreeDays");
