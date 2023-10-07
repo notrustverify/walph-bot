@@ -220,7 +220,10 @@ async function blitz(group: number, contractName: string, urlPath: string) {
   
 }
 
-const networkToUse = "mainnet";
+let networkToUse = process.argv.slice(2)[1];
+if (networkToUse === undefined)
+  networkToUse = "mainnet"
+
 //Select our network defined in alephium.config.ts
 const network = configuration.networks[networkToUse];
 
