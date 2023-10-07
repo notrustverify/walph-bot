@@ -8,6 +8,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loadDeployments = void 0;
 const _1 = require(".");
+const _deployments_mainnet_json_1 = __importDefault(require("../.deployments.mainnet.json"));
 const _deployments_devnet_json_1 = __importDefault(require("../.deployments.devnet.json"));
 function toDeployments(json) {
     const contracts = {
@@ -40,7 +41,11 @@ function toDeployments(json) {
     };
 }
 function loadDeployments(networkId, deployerAddress) {
-    const deployments = networkId === "devnet" ? _deployments_devnet_json_1.default : undefined;
+    const deployments = networkId === "mainnet"
+        ? _deployments_mainnet_json_1.default
+        : networkId === "devnet"
+            ? _deployments_devnet_json_1.default
+            : undefined;
     if (deployments === undefined) {
         throw Error("The contract has not been deployed to the " + networkId);
     }

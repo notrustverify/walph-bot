@@ -110,7 +110,7 @@ async function blitz(group, contractName, urlPath) {
             console.log(message);
         }
         // waiting for new timestamp
-        drawTimestamp = await waitForNewTimestamp(1);
+        drawTimestamp = await waitForNewTimestamp(240);
         console.log(group +
             " - 10 minutes - Notification at " +
             new Date(timeLeft + Date.now()));
@@ -134,18 +134,18 @@ async function blitz(group, contractName, urlPath) {
             //sendMessage(message);
             console.log(message);
         }
-        drawTimestamp = await waitForNewTimestamp(30);
+        //drawTimestamp = await waitForNewTimestamp(whenRun/3); //arbitrary value, could be changed
         console.log(group +
             " - 3 hours - Notification at " +
             new Date(repeatEvery + Date.now()));
-        setTimeout(messageTimeLeft, repeatEvery);
+        setTimeout(messageTimeLeft, repeatEvery, whenRun);
     }
     async function getWinner() {
         let initialState = await WalphState.fetchState();
         let drawTimestamp = Number(initialState.fields.drawTimestamp);
         const numAttendees = initialState.fields.numAttendees;
         let timeLeft = drawTimestamp - Date.now();
-        drawTimestamp = await waitForNewTimestamp(30);
+        drawTimestamp = await waitForNewTimestamp(60);
         initialState = await WalphState.fetchState();
         const winner = initialState.fields.lastWinner.toString().slice(0, 6) +
             "..." +
@@ -173,7 +173,7 @@ async function blitz(group, contractName, urlPath) {
     getWinner();
     messageFomo();
 }
-const networkToUse = "devnet";
+const networkToUse = "mainnet";
 //Select our network defined in alephium.config.ts
 const network = alephium_config_1.default.networks[networkToUse];
 //NodeProvider is an abstraction of a connection to the Alephium network
@@ -184,8 +184,8 @@ const groupArg = parseInt(process.argv.slice(2)[0]);
 //distribute(configuration.networks[networkToUse].privateKeys[group], group, "Walph");
 //distribute(configuration.networks[networkToUse].privateKeys[group], group, "Walph50HodlAlf");
 blitz(groupArg, "WalphTimed:BlitzOneDay", "blitz");
-//blitz(groupArg, "WalphTimed:BlitzOneDayOneAlph");
-//blitz(groupArg, "WalphTimed:BlitzThreeDays");
+blitz(groupArg, "WalphTimed:BlitzOneDayOneAlph", "blitz1");
+blitz(groupArg, "WalphTimed:BlitzThreeDays", "blitz3");
 /*draw(configuration.networks[networkToUse].privateKeys[group], group, "WalphTimed:BlitzOneDayOneAlph");
   draw(configuration.networks[networkToUse].privateKeys[group], group, "WalphTimed:BlitzThreeDays");
 */
