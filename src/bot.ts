@@ -123,7 +123,7 @@ async function blitz(group: number, contractName: string, urlPath: string) {
         "🏆 Prize pot: " +
         prizePot +
         " ℵ\n\n<a href='"+url+"'>🧇 Play here</a>";
-      //sendMessage(message);
+      sendMessage(message);
       console.log(message);
     }
 
@@ -158,11 +158,11 @@ async function blitz(group: number, contractName: string, urlPath: string) {
         "</b>\n\n🏆 Prize pot: " +
         prizePot +
         " ℵ\n\n<a href='"+url+"'>🧇 Play here</a>";
-      //sendMessage(message);
+      sendMessage(message);
       console.log(message);
     }
 
-    //drawTimestamp = await waitForNewTimestamp(whenRun/3); //arbitrary value, could be changed
+    drawTimestamp = await waitForNewTimestamp(whenRun/3); //arbitrary value, could be changed
     console.log(
       group +
         " - 3 hours - Notification at " +
@@ -193,7 +193,7 @@ async function blitz(group: number, contractName: string, urlPath: string) {
         "\n\n🎉 Winner: " +
         winner +
         "\n\n🍀 Try your chance <a href='"+url+"'>here</a>";
-      //sendMessage(message);
+      sendMessage(message);
       console.log(message);
     }
 
