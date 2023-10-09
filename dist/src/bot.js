@@ -91,76 +91,108 @@ async function blitz(group, contractName, urlPath) {
         return Number(state);
     }
     async function messageFomo() {
-        const initialState = await WalphState.fetchState();
-        let drawTimestamp = Number(initialState.fields.drawTimestamp);
-        const prizePot = Number(initialState.fields.balance / web3_1.ONE_ALPH);
-        const numAttendees = Number(initialState.fields.numAttendees);
-        let timeLeft = drawTimestamp + tenMinutes - Date.now();
-        if (numAttendees > 0 && timeLeft <= tenMinutes && timeLeft > 0) {
-            //ten minutes
-            const message = "🚨 Blitz Walph on group " +
-                group +
-                "\n\n😱 <b>" +
-                formatTimeAgo(timeLeft / 1000).replace('in', '') +
-                " left till next draw</b>\n\n" +
-                "🏆 Prize pot: " +
-                prizePot +
-                " ℵ\n\n<a href='" + url + "'>🧇 Play here</a>";
-            //sendMessage(message);
-            console.log(message);
+        try {
+            const initialState = await WalphState.fetchState();
+            let drawTimestamp = Number(initialState.fields.drawTimestamp);
+            const prizePot = Number(initialState.fields.balance / web3_1.ONE_ALPH);
+            const numAttendees = Number(initialState.fields.numAttendees);
+            let timeLeft = drawTimestamp + tenMinutes - Date.now();
+            if (numAttendees > 0 && timeLeft <= tenMinutes && timeLeft > 0) {
+                //ten minutes
+                const message = "🚨 Blitz Walph on group " +
+                    group +
+                    "\n\n😱 <b>" +
+                    formatTimeAgo(timeLeft / 1000).replace("in", "") +
+                    " left till next draw</b>\n\n" +
+                    "🏆 Prize pot: " +
+                    prizePot +
+                    " ℵ\n\n<a href='" +
+                    url +
+                    "'>🧇 Play here</a>";
+                sendMessage(message);
+                console.log(message);
+            }
+            // waiting for new timestamp
+            drawTimestamp = await waitForNewTimestamp(240);
         }
-        // waiting for new timestamp
-        drawTimestamp = await waitForNewTimestamp(240);
+        catch (err) {
+            console.log(err);
+            await (0, web3_1.sleep)(60 * 1000);
+        }
         console.log(group +
             " - 10 minutes - Notification at " +
             new Date(timeLeft + Date.now()));
         setTimeout(messageFomo, timeLeft);
     }
     async function messageTimeLeft(whenRun) {
-        const initialState = await WalphState.fetchState();
-        const repeatEvery = Number(initialState.fields.repeatEvery) / whenRun;
-        let drawTimestamp = Number(initialState.fields.drawTimestamp);
-        const prizePot = Number(initialState.fields.balance / web3_1.ONE_ALPH);
-        const numAttendees = Number(initialState.fields.numAttendees);
-        let timeLeft = drawTimestamp - Date.now();
-        if (numAttendees > 0 && timeLeft <= repeatEvery && timeLeft > 120 * 1000) {
-            let message = "Blitz Walph on group " +
-                group +
-                "\n\n⏳<b>" +
-                formatTimeAgo(timeLeft / 1000) +
-                "</b>\n\n🏆 Prize pot: " +
-                prizePot +
-                " ℵ\n\n<a href='" + url + "'>🧇 Play here</a>";
-            //sendMessage(message);
-            console.log(message);
+        let drawTimestamp = 0;
+        let repeatEvery = 0;
+        try {
+            const initialState = await WalphState.fetchState();
+            repeatEvery = Number(initialState.fields.repeatEvery) / whenRun;
+            drawTimestamp = Number(initialState.fields.drawTimestamp);
+            const prizePot = Number(initialState.fields.balance / web3_1.ONE_ALPH);
+            const numAttendees = Number(initialState.fields.numAttendees);
+            let timeLeft = drawTimestamp - Date.now();
+            if (numAttendees > 0 &&
+                timeLeft <= repeatEvery &&
+                timeLeft > 120 * 1000) {
+                let message = "Blitz Walph on group " +
+                    group +
+                    "\n\n⏳<b>" +
+                    formatTimeAgo(timeLeft / 1000) +
+                    "</b>\n\n🏆 Prize pot: " +
+                    prizePot +
+                    " ℵ\n\n<a href='" +
+                    url +
+                    "'>🧇 Play here</a>";
+                sendMessage(message);
+                console.log(message);
+            }
+            drawTimestamp = await waitForNewTimestamp(whenRun / 3);
+            //arbitrary value, could be changed
         }
-        //drawTimestamp = await waitForNewTimestamp(whenRun/3); //arbitrary value, could be changed
+        catch (err) {
+            console.log(err);
+            await (0, web3_1.sleep)(60 * 1000);
+        }
         console.log(group +
             " - 3 hours - Notification at " +
             new Date(repeatEvery + Date.now()));
         setTimeout(messageTimeLeft, repeatEvery, whenRun);
     }
     async function getWinner() {
-        let initialState = await WalphState.fetchState();
-        let drawTimestamp = Number(initialState.fields.drawTimestamp);
-        const numAttendees = initialState.fields.numAttendees;
-        let timeLeft = drawTimestamp - Date.now();
-        drawTimestamp = await waitForNewTimestamp(60);
-        initialState = await WalphState.fetchState();
-        const winner = initialState.fields.lastWinner.toString().slice(0, 6) +
-            "..." +
-            initialState.fields.lastWinner.toString().slice(-6);
-        if (numAttendees > 0) {
-            const message = "🎲 Blitz Walph on group " +
-                group +
-                " drawn" +
-                "\n\n🎉 Winner: " +
-                winner +
-                "\n\n🍀 Try your chance <a href='" + url + "'>here</a>";
-            //sendMessage(message);
-            console.log(message);
+        let drawTimestamp = 0;
+        try {
+            let initialState = await WalphState.fetchState();
+            drawTimestamp = Number(initialState.fields.drawTimestamp);
+            const numAttendees = initialState.fields.numAttendees;
+            let timeLeft = drawTimestamp - Date.now();
+            drawTimestamp = await waitForNewTimestamp(60);
+            initialState = await WalphState.fetchState();
+            let winner = initialState.fields.lastWinner.toString().slice(0, 6) +
+                "..." +
+                initialState.fields.lastWinner.toString().slice(-6);
+            if (winner === web3_1.ZERO_ADDRESS)
+                winner = "No winner yet. Might be your chance";
+            if (numAttendees > 0) {
+                const message = "🎲 Blitz Walph on group " +
+                    group +
+                    " drawn" +
+                    "\n\n🎉 Winner: " +
+                    winner +
+                    "\n\n🍀 Try your chance <a href='" +
+                    url +
+                    "'>here</a>";
+                sendMessage(message);
+                console.log(message);
+            }
+            timeLeft = drawTimestamp - Date.now();
         }
-        timeLeft = drawTimestamp - Date.now();
+        catch (err) {
+            console.log(err);
+            await (0, web3_1.sleep)(30 * 1000);
+        }
         console.log(group + " - winner - Notification at " + new Date(timeLeft + Date.now()));
         setTimeout(getWinner, timeLeft + 1000);
     }
@@ -173,7 +205,9 @@ async function blitz(group, contractName, urlPath) {
     getWinner();
     messageFomo();
 }
-const networkToUse = "mainnet";
+let networkToUse = process.argv.slice(2)[1];
+if (networkToUse === undefined)
+    networkToUse = "mainnet";
 //Select our network defined in alephium.config.ts
 const network = alephium_config_1.default.networks[networkToUse];
 //NodeProvider is an abstraction of a connection to the Alephium network
