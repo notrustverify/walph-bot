@@ -8,6 +8,7 @@ import {
   Contract,
   ONE_ALPH,
   sleep,
+  ZERO_ADDRESS,
 } from "@alephium/web3";
 import { PrivateKeyWallet } from "@alephium/web3-wallet";
 import configuration from "../alephium.config";
@@ -180,10 +181,9 @@ async function blitz(group: number, contractName: string, urlPath: string) {
     drawTimestamp = await waitForNewTimestamp(60);
 
     initialState = await WalphState.fetchState();
-    const winner =
-      initialState.fields.lastWinner.toString().slice(0, 6) +
-      "..." +
-      initialState.fields.lastWinner.toString().slice(-6);
+    let winner = initialState.fields.lastWinner.toString().slice(0, 6) +"..." +initialState.fields.lastWinner.toString().slice(-6);
+    if(winner === ZERO_ADDRESS)
+      winner = "No winner yet. Might be your chance"
 
     if(numAttendees > 0){
       const message =
