@@ -68,14 +68,6 @@ function formatTimeAgo(duration) {
 async function blitz(group, contractName, urlPath) {
     //.deployments contains the info of our `TokenFaucet` deployement, as we need to now the contractId and address
     //This was auto-generated with the `cli deploy` of our `scripts/0_deploy_faucet.ts`
-    const deployments = await cli_1.Deployments.from("./artifacts/.deployments." + networkToUse + ".json");
-    //Make sure it match your address group
-    const url = "https://walph.io/" + urlPath;
-    const accountGroup = group;
-    const deployed = deployments.getDeployedContractResult(accountGroup, contractName);
-    const walpheContractAddress = deployed.contractInstance.address;
-    const WalphState = ts_1.WalphTimed.at(walpheContractAddress);
-    const initialState = await WalphState.fetchState();
     async function waitForNewTimestamp(sleepSec) {
         let newState = await WalphState.fetchState();
         const actualDrawTimestamp = newState.fields.drawTimestamp;
@@ -196,6 +188,14 @@ async function blitz(group, contractName, urlPath) {
         console.log(group + " - winner - Notification at " + new Date(timeLeft + Date.now()));
         setTimeout(getWinner, timeLeft + 1000);
     }
+    const deployments = await cli_1.Deployments.from("./artifacts/.deployments." + networkToUse + ".json");
+    //Make sure it match your address group
+    const url = "https://walph.io/" + urlPath;
+    const accountGroup = group;
+    const deployed = deployments.getDeployedContractResult(accountGroup, contractName);
+    const walpheContractAddress = deployed.contractInstance.address;
+    const WalphState = ts_1.WalphTimed.at(walpheContractAddress);
+    const initialState = await WalphState.fetchState();
     const drawTimestamp = Number(initialState.fields.drawTimestamp);
     const timeLeft = drawTimestamp - Date.now();
     console.log(group + " - Draw is at " + new Date(drawTimestamp));
